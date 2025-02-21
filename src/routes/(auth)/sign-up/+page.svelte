@@ -15,12 +15,14 @@
 	let showPassword = $state(false);
 
 	const form = superForm(data.form, { validators: zodClient(signUpSchema) });
-	const { form: formData, enhance } = form;
+	const { form: formData, enhance, message } = form;
 </script>
 
 <svelte:head>
 	<title>Register account - Financial Platform</title>
 </svelte:head>
+
+<div class="text-red-500">{$message}</div>
 
 <Card.Root>
 	<Card.Header>
@@ -28,7 +30,7 @@
 	</Card.Header>
 
 	<Card.Content>
-		<form class="space-y-4 md:space-y-6" use:enhance>
+		<form method="POST" class="space-y-4 md:space-y-6" use:enhance>
 			<Form.Field {form} name="name">
 				<Form.Control>
 					{#snippet children({ props })}
