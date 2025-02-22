@@ -1,5 +1,11 @@
 <script lang="ts">
+	import Logo from '$assets/logo.svg';
 	import { page } from '$app/state';
+	import { APP_NAME } from '$lib';
+	import { Menu } from './icons';
+	import { Button, buttonVariants } from './ui/button';
+	import * as Sheet from './ui/sheet';
+	import { cn } from './utils';
 
 	const routes = [
 		{
@@ -36,3 +42,31 @@
 		>
 	{/each}
 </nav>
+
+<Sheet.Root>
+	<Sheet.Trigger
+		class={cn(
+			buttonVariants({ variant: 'outline', size: 'sm' }),
+			'lg:hidden',
+			'font-normal bg-white/10 hover:bg-white/20 hover:text-white border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-hidden text-white focus:bg-white/30 transition'
+		)}><Menu /></Sheet.Trigger
+	>
+
+	<Sheet.Content side="left" class="px-2">
+		<div class="w-full flex justify-start items-center pt-5 px-4">
+			<img class="h-7 w-7" src={Logo} alt="logo" />
+			<span class="ml-2.5 text-xl font-semibold text-primary">
+				{APP_NAME}
+			</span>
+		</div>
+		<nav class="flex flex-col gap-y-2 pt-6">
+			{#each routes as route}
+				<Button
+					href={route.href}
+					variant={page.url.pathname === route.href ? 'secondary' : 'ghost'}
+					class="w-full justify-start">{route.label}</Button
+				>
+			{/each}
+		</nav>
+	</Sheet.Content>
+</Sheet.Root>
