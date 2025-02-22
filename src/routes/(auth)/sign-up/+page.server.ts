@@ -1,18 +1,20 @@
-import { signUpSchema } from '$features/auth/zod.schema';
-import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+import { fail } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { db } from '$lib/server/database';
-import { createUser, getUserByUsername } from '$features/auth';
+import { createUser, getUserByUsername } from '$lib/server/user/repo';
+import { signUpSchema } from '$lib/auth/zod-schema';
+import { createAndSetAuthTokenCookie } from '$lib/server/auth';
 
 export const load = (async () => {
 	return { form: await superValidate(zod(signUpSchema)) };
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async (event) => {
+		const { request } = event;
+
 		const form = await superValidate(request, zod(signUpSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -27,6 +29,8 @@ export const actions = {
 
 		const user = await createUser(data);
 		if (!user) return message(form, 'Can not create user', { status: 400 });
+
+		createAndSetAuthTokenCookie(event, user);
 
 		return message(form, 'Account created');
 	}

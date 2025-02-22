@@ -1,17 +1,19 @@
-import { signInSchema } from '$features/auth/zod.schema';
-import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+import { fail } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { checkPassword, getUserByUsername } from '$features/auth';
+import { signInSchema } from '$lib/auth/zod-schema';
+import { getUserByUsername, comparePasswords } from '$lib/server/user/repo';
+import { createAndSetAuthTokenCookie } from '$lib/server/auth';
 
 export const load = (async () => {
 	return { form: await superValidate(zod(signInSchema)) };
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async (event) => {
+		const { request } = event;
 		const form = await superValidate(request, zod(signInSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -21,8 +23,10 @@ export const actions = {
 		const user = await getUserByUsername(data.email);
 		if (!user) return message(form, 'Email or password incorrect', { status: 400 });
 
-		const passwordsMatch = await checkPassword(user, data.password);
+		const passwordsMatch = await comparePasswords(user, data.password);
 		if (!passwordsMatch) return message(form, 'Email or password incorrect', { status: 400 });
+
+		createAndSetAuthTokenCookie(event, user);
 
 		return message(form, 'Welcome back');
 	}

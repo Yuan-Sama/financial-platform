@@ -4,6 +4,7 @@
 
 	import '../app.css';
 	import Logo from '$assets/logo.svg';
+	import BackToTop from '$components/back-to-top.svelte';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>
@@ -14,3 +15,5 @@
 </svelte:head>
 
 {@render children()}
+
+<BackToTop />

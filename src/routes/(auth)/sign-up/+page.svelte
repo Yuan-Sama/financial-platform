@@ -5,10 +5,10 @@
 	import * as Card from '$components/ui/card';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { signUpSchema } from '$features/auth/zod.schema';
 	import { Input } from '$components/ui/input';
 	import { Label } from '$components/ui/label';
 	import { Checkbox } from '$components/ui/checkbox';
+	import { signUpSchema } from '$lib/auth/zod-schema';
 
 	let { data }: { data: PageData } = $props();
 
