@@ -4,6 +4,7 @@
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { createAvatar } from '@dicebear/core';
 	import { LogOut, User } from './icons';
+	import { goto } from '$app/navigation';
 
 	let { displayName }: { displayName: string } = $props();
 
@@ -31,13 +32,20 @@
 				<span>Profile</span>
 			</DropdownMenu.Item>
 			<DropdownMenu.Separator />
-			<DropdownMenu.Item class="hover:cursor-pointer">
-				<form action="/log-out" method="post" class="contents hover:cursor-pointer">
-					<button type="submit" class="contents hover:cursor-pointer">
-						<LogOut class="mr-2" />
-						<span>Log out</span>
-					</button>
-				</form>
+			<DropdownMenu.Item
+				class="hover:cursor-pointer"
+				onclick={async () => {
+					const response = await fetch('/api/log-out', {
+						method: 'POST'
+					});
+
+					const data = await response.json();
+
+					if (data.location) return await goto(data.location, { invalidateAll: true });
+				}}
+			>
+				<LogOut class="mr-2" />
+				<span>Log out</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 	</DropdownMenu.Content>
