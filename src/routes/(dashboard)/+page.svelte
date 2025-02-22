@@ -11,4 +11,4 @@
 	<title>Dashboard - {APP_NAME}</title>
 </svelte:head>
 
-<Header />
+<Header displayName={data.user.name} />

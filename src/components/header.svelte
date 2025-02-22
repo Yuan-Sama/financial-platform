@@ -1,6 +1,9 @@
 <script lang="ts">
 	import HeaderLogo from './header-logo.svelte';
 	import Navigation from './navigation.svelte';
+	import UserButton from './user-button.svelte';
+
+	let { displayName }: { displayName: string } = $props();
 </script>
 
 <header class="bg-linear-to-b from-primary-700 to-primary-500 px-4 py-8 pb-36 lg:px-14">
@@ -107,10 +110,12 @@
 					</div>
 				</div> -->
 			</div>
+
+			<UserButton {displayName} />
 		</div>
 
 		<div class="mb-4 space-y-2">
-			<h2 class="text-2xl font-medium text-white lg:text-4xl">Welcome back 👋🏻</h2>
+			<h2 class="text-2xl font-medium text-white lg:text-4xl">Welcome to Dashboard 👋🏻</h2>
 			<p class="text-sm text-[#89b6fd] lg:text-base">This is your financial reports</p>
 		</div>
 	</div>
