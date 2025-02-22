@@ -12,9 +12,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async (event) => {
-		const { request } = event;
-
+	default: async ({ request, cookies }) => {
 		const form = await superValidate(request, zod(signUpSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -30,7 +28,7 @@ export const actions = {
 		const user = await createUser(data);
 		if (!user) return message(form, 'Can not create user', { status: 400 });
 
-		createAndSetAuthTokenCookie(event, user);
+		await createAndSetAuthTokenCookie(cookies, user);
 
 		return message(form, 'Account created');
 	}

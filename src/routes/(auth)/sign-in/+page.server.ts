@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { signInSchema } from '$lib/auth/zod-schema';
@@ -12,8 +12,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async (event) => {
-		const { request } = event;
+	default: async ({ request, cookies }) => {
 		const form = await superValidate(request, zod(signInSchema));
 		if (!form.valid) {
 			return fail(400, { form });
@@ -26,8 +25,8 @@ export const actions = {
 		const passwordsMatch = await comparePasswords(user, data.password);
 		if (!passwordsMatch) return message(form, 'Email or password incorrect', { status: 400 });
 
-		createAndSetAuthTokenCookie(event, user);
+		await createAndSetAuthTokenCookie(cookies, user);
 
-		return message(form, 'Welcome back');
+		return redirect(302, '/');
 	}
 } satisfies Actions;

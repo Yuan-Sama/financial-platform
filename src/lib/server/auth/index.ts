@@ -1,4 +1,4 @@
-import type { RequestEvent } from '@sveltejs/kit';
+import type { Cookies } from '@sveltejs/kit';
 import type { User } from '../user';
 
 import * as jose from 'jose';
@@ -54,8 +54,8 @@ export async function validateAuthToken(token: string | undefined) {
 	}
 }
 
-export function setAuthTokenCookie(event: RequestEvent, token: string, expiresAt: Date): void {
-	event.cookies.set(AUTH_TOKEN, token, {
+export function setAuthTokenCookie(cookies: Cookies, token: string, expiresAt: Date): void {
+	cookies.set(AUTH_TOKEN, token, {
 		httpOnly: true,
 		sameSite: 'lax',
 		expires: expiresAt,
@@ -63,20 +63,26 @@ export function setAuthTokenCookie(event: RequestEvent, token: string, expiresAt
 	});
 }
 
+export function getExpiresAt(seconds: number = 3600 /** 1 hour */) {
+	const expiresAtMillis = Date.now() + seconds * 1000;
+	return new Date(expiresAtMillis);
+}
+
 export async function createAndSetAuthTokenCookie(
-	event: RequestEvent,
+	cookies: Cookies,
 	user: User,
 	expiresAtSeconds: number = 3600 /** 1 hour */
 ) {
-	const expiresAtMillis = Date.now() + expiresAtSeconds * 1000;
-	const expiresAt = new Date(expiresAtMillis);
+	const expiresAt = getExpiresAt(expiresAtSeconds);
+
+	console.log(expiresAt);
 
 	const authToken = await createAuthToken(user, expiresAt);
-	setAuthTokenCookie(event, authToken, expiresAt);
+	setAuthTokenCookie(cookies, authToken, expiresAt);
 }
 
-export function deleteAuthTokenCookie(event: RequestEvent): void {
-	event.cookies.set(AUTH_TOKEN, '', {
+export function deleteAuthTokenCookie(cookies: Cookies): void {
+	cookies.set(AUTH_TOKEN, '', {
 		httpOnly: true,
 		sameSite: 'lax',
 		maxAge: 0,

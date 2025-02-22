@@ -9,6 +9,7 @@
 	import { Label } from '$components/ui/label';
 	import { Checkbox } from '$components/ui/checkbox';
 	import { signUpSchema } from '$lib/auth/zod-schema';
+	import { APP_NAME } from '$lib';
 
 	let { data }: { data: PageData } = $props();
 
@@ -19,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>Register account - Financial Platform</title>
+	<title>Register account - {APP_NAME}</title>
 </svelte:head>
 
 <div class="text-red-500">{$message}</div>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Tween } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import { expoInOut } from 'svelte/easing';
