@@ -10,20 +10,33 @@
 	import { Checkbox } from '$components/ui/checkbox';
 	import { signInSchema } from '$lib/auth/zod-schema';
 	import { APP_NAME } from '$lib';
+	import { goto } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
 
 	let { data }: { data: PageData } = $props();
 
 	let showPassword = $state(false);
 
-	const form = superForm(data.form, { validators: zodClient(signInSchema) });
-	const { form: formData, enhance, message } = form;
+	const form = superForm(data.form, {
+		validators: zodClient(signInSchema),
+		onUpdated({ form }) {
+			if (!form.valid) {
+				toast.error(form.message);
+			}
+		},
+		onResult({ result }) {
+			if (result.type === 'redirect') {
+				goto(result.location);
+				toast.success('We are glad you are back');
+			}
+		}
+	});
+	const { form: formData, enhance } = form;
 </script>
 
 <svelte:head>
 	<title>Login to your account - {APP_NAME}</title>
 </svelte:head>
-
-<div class="text-red-500">{$message}</div>
 
 <Card.Root>
 	<Card.Header>
@@ -36,30 +49,17 @@
 				<Form.Control>
 					{#snippet children({ props })}
 						<Form.Label class="text-gray-800 text-sm mb-2 block">Your email</Form.Label>
-						<div class="relative flex items-center">
-							<Input
-								{...props}
-								bind:value={$formData.email}
-								type="email"
-								required
-								placeholder="Enter email address"
-							/>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="#bbb"
-								stroke="#bbb"
-								class="w-4 h-4 absolute right-4"
-								viewBox="0 0 24 24"
-							>
-								<circle cx="10" cy="7" r="6" data-original="#000000"></circle>
-								<path
-									d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z"
-									data-original="#000000"
-								></path>
-							</svg>
-						</div>
+						<Input
+							{...props}
+							bind:value={$formData.email}
+							type="email"
+							required
+							placeholder="Enter email address"
+							autocomplete="email"
+						/>
 					{/snippet}
 				</Form.Control>
+				<Form.FieldErrors />
 			</Form.Field>
 
 			<Form.Field {form} name="password">
@@ -73,6 +73,7 @@
 								type={showPassword ? 'text' : 'password'}
 								required
 								placeholder="Enter password"
+								autocomplete="current-password"
 							/>
 							<button
 								type="button"
@@ -83,7 +84,7 @@
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									fill={showPassword ? '#525252' : '#bbb'}
+									fill={showPassword ? '#1e2939' : '#bbb'}
 									stroke={showPassword ? '#525252' : '#bbb'}
 									class="w-4 h-4 absolute right-4 cursor-pointer"
 									viewBox="0 0 128 128"
@@ -97,6 +98,7 @@
 						</div>
 					{/snippet}
 				</Form.Control>
+				<Form.FieldErrors />
 			</Form.Field>
 
 			<div class="flex flex-wrap items-center justify-between gap-4">

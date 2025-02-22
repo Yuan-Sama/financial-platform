@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { createUser, getUserByUsername } from '$lib/server/user/repo';
@@ -30,6 +30,6 @@ export const actions = {
 
 		await createAndSetAuthTokenCookie(cookies, user);
 
-		return message(form, 'Account created');
+		return redirect(303, '/');
 	}
 } satisfies Actions;

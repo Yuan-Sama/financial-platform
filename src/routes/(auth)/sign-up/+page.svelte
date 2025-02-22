@@ -10,20 +10,33 @@
 	import { Checkbox } from '$components/ui/checkbox';
 	import { signUpSchema } from '$lib/auth/zod-schema';
 	import { APP_NAME } from '$lib';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
 	let showPassword = $state(false);
 
-	const form = superForm(data.form, { validators: zodClient(signUpSchema) });
+	const form = superForm(data.form, {
+		validators: zodClient(signUpSchema),
+		onUpdated({ form }) {
+			if (!form.valid) {
+				toast.error(form.message);
+			}
+		},
+		onResult({ result }) {
+			if (result.type === 'redirect') {
+				goto(result.location);
+				toast.success(`Welcome to ${APP_NAME}`);
+			}
+		}
+	});
 	const { form: formData, enhance, message } = form;
 </script>
 
 <svelte:head>
 	<title>Register account - {APP_NAME}</title>
 </svelte:head>
-
-<div class="text-red-500">{$message}</div>
 
 <Card.Root>
 	<Card.Header>
@@ -42,9 +55,11 @@
 							type="text"
 							required
 							placeholder="Enter your name"
+							autocomplete="off"
 						/>
 					{/snippet}
 				</Form.Control>
+				<Form.FieldErrors />
 			</Form.Field>
 
 			<Form.Field {form} name="email">
@@ -57,9 +72,11 @@
 							type="email"
 							required
 							placeholder="Enter email address"
+							autocomplete="email"
 						/>
 					{/snippet}
 				</Form.Control>
+				<Form.FieldErrors />
 			</Form.Field>
 
 			<Form.Field {form} name="password">
@@ -73,6 +90,7 @@
 								type={showPassword ? 'text' : 'password'}
 								required
 								placeholder="Enter password"
+								autocomplete="current-password"
 							/>
 							<button
 								type="button"
@@ -97,6 +115,7 @@
 						</div>
 					{/snippet}
 				</Form.Control>
+				<Form.FieldErrors />
 			</Form.Field>
 
 			<div class="flex items-center">

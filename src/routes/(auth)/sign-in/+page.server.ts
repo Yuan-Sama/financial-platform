@@ -27,6 +27,6 @@ export const actions = {
 
 		await createAndSetAuthTokenCookie(cookies, user);
 
-		return redirect(302, '/');
+		return redirect(303, '/');
 	}
 } satisfies Actions;

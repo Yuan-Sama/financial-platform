@@ -74,10 +74,8 @@ export async function createAndSetAuthTokenCookie(
 	expiresAtSeconds: number = 3600 /** 1 hour */
 ) {
 	const expiresAt = getExpiresAt(expiresAtSeconds);
-
-	console.log(expiresAt);
-
 	const authToken = await createAuthToken(user, expiresAt);
+
 	setAuthTokenCookie(cookies, authToken, expiresAt);
 }
 
