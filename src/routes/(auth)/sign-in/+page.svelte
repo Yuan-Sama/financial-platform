@@ -24,9 +24,9 @@
 				toast.error(form.message);
 			}
 		},
-		onResult({ result }) {
+		onResult: async ({ result }) => {
 			if (result.type === 'redirect') {
-				goto(result.location);
+				await goto(result.location);
 				toast.success('We are glad you are back');
 			}
 		}
