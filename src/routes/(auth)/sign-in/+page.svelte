@@ -12,6 +12,7 @@
 	import { APP_NAME } from '$lib';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import Spinner from '$components/spinner.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -31,7 +32,7 @@
 			}
 		}
 	});
-	const { form: formData, enhance } = form;
+	const { form: formData, enhance, delayed } = form;
 </script>
 
 <svelte:head>
@@ -56,6 +57,7 @@
 							required
 							placeholder="Enter email address"
 							autocomplete="email"
+							disabled={$delayed}
 						/>
 					{/snippet}
 				</Form.Control>
@@ -74,6 +76,7 @@
 								required
 								placeholder="Enter password"
 								autocomplete="current-password"
+								disabled={$delayed}
 							/>
 							<button
 								type="button"
@@ -103,7 +106,7 @@
 
 			<div class="flex flex-wrap items-center justify-between gap-4">
 				<div class="flex items-center text-sm">
-					<Checkbox id="remember-me" />
+					<Checkbox id="remember-me" disabled={$delayed} />
 					<Label for="remember-me" class="ml-3 font-normal">Remember me</Label>
 				</div>
 				<div class="text-sm">
@@ -114,7 +117,12 @@
 			</div>
 
 			<div class="mt-8">
-				<Form.Button class="w-full rounded-lg">Sign in</Form.Button>
+				<Form.Button class="w-full rounded-lg" disabled={$delayed}
+					>Sign in
+					{#if $delayed}
+						<Spinner class="ml-1" />
+					{/if}
+				</Form.Button>
 			</div>
 
 			<p class="text-gray-800 text-sm mt-8 text-center">

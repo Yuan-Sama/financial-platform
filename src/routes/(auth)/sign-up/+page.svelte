@@ -12,6 +12,7 @@
 	import { APP_NAME } from '$lib';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import Spinner from '$components/spinner.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -31,7 +32,7 @@
 			}
 		}
 	});
-	const { form: formData, enhance, message } = form;
+	const { form: formData, enhance, message, delayed } = form;
 </script>
 
 <svelte:head>
@@ -56,6 +57,7 @@
 							required
 							placeholder="Enter your name"
 							autocomplete="off"
+							disabled={$delayed}
 						/>
 					{/snippet}
 				</Form.Control>
@@ -73,6 +75,7 @@
 							required
 							placeholder="Enter email address"
 							autocomplete="email"
+							disabled={$delayed}
 						/>
 					{/snippet}
 				</Form.Control>
@@ -91,6 +94,7 @@
 								required
 								placeholder="Enter password"
 								autocomplete="current-password"
+								disabled={$delayed}
 							/>
 							<button
 								type="button"
@@ -119,7 +123,7 @@
 			</Form.Field>
 
 			<div class="flex items-center">
-				<Checkbox id="terms" />
+				<Checkbox id="terms" disabled={$delayed} />
 				<Label for="terms" class="ml-3 font-normal text-sm"
 					>I accept the <a href={'#'} class="text-primary font-semibold hover:underline ml-1"
 						>Terms and Conditions</a
@@ -128,7 +132,12 @@
 			</div>
 
 			<div class="mt-8">
-				<Form.Button class="w-full rounded-lg">Create an account</Form.Button>
+				<Form.Button class="w-full rounded-lg"
+					>Create an account
+					{#if $delayed}
+						<Spinner class="ml-1" />
+					{/if}
+				</Form.Button>
 			</div>
 
 			<p class="text-gray-800 text-sm mt-8 text-center">

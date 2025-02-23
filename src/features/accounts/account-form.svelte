@@ -10,6 +10,7 @@
 	import * as Form from '$components/ui/form';
 	import { Input } from '$components/ui/input';
 	import { get } from 'svelte/store';
+	import Spinner from '$components/spinner.svelte';
 
 	let {
 		form,
@@ -19,7 +20,7 @@
 		action: string;
 	} = $props();
 
-	const { enhance, form: formData } = form;
+	const { enhance, form: formData, delayed } = form;
 
 	function isUpdateForm(form: CreateForm | UpdateForm): form is UpdateForm {
 		const { form: formData } = form as UpdateForm;
@@ -46,16 +47,19 @@
 				<Input
 					{...props}
 					bind:value={$formData.name}
-					disabled={false}
 					placeholder="e.g. Cash, Bank, Credit Card"
 					class="mt-2"
+					disabled={$delayed}
 				/>
 				<Form.FieldErrors />
 			{/snippet}
 		</Form.Control>
 	</Form.Field>
 
-	<Form.Button class="w-full" disabled={false}>
+	<Form.Button class="w-full " disabled={$delayed}>
 		{isUpdateForm(form) ? 'Save Changes' : 'Create account'}
+		{#if $delayed}
+			<Spinner class="ml-1" />
+		{/if}
 	</Form.Button>
 </form>
