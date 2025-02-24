@@ -92,13 +92,13 @@
 <div>
 	<div class="flex items-center py-4">
 		<Input
-			placeholder="Filter emails..."
-			value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+			placeholder="Filter names..."
+			value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
 			onchange={(e) => {
-				table.getColumn('email')?.setFilterValue(e.currentTarget.value);
+				table.getColumn('name')?.setFilterValue(e.currentTarget.value);
 			}}
 			oninput={(e) => {
-				table.getColumn('email')?.setFilterValue(e.currentTarget.value);
+				table.getColumn('name')?.setFilterValue(e.currentTarget.value);
 			}}
 			class="max-w-sm"
 		/>
