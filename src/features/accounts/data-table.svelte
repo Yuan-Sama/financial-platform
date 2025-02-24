@@ -7,6 +7,7 @@
 		getPaginationRowModel,
 		getSortedRowModel,
 		type PaginationState,
+		type Row,
 		type RowSelectionState,
 		type SortingState
 	} from '@tanstack/table-core';
@@ -16,12 +17,17 @@
 	import { Input } from '$components/ui/input';
 	import { Trash2 } from 'lucide-svelte';
 
+	type MaybePromise<T> = T | Promise<T> | PromiseLike<T>;
+
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
 		data: TData[];
+		filterKey: string;
+		onDelete: (rows: Row<TData>[]) => MaybePromise<void>;
+		disabled?: boolean;
 	};
 
-	let { data, columns }: DataTableProps<TData, TValue> = $props();
+	let { data, columns, filterKey, onDelete, disabled }: DataTableProps<TData, TValue> = $props();
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 5 });
 	let sorting = $state<SortingState>([]);
@@ -97,8 +103,8 @@
 			class="max-w-sm"
 		/>
 		{#if table.getFilteredSelectedRowModel().rows.length > 0}
-			<Button size="sm" variant="outline" class="ml-auto font-normal text-xs"
-				><Trash2 /> Delete</Button
+			<Button size="sm" variant="outline-red" class="ml-auto font-normal text-xs" {disabled}
+				><Trash2 /> Delete ({table.getFilteredSelectedRowModel().rows.length})</Button
 			>
 		{/if}
 	</div>

@@ -25,7 +25,7 @@
 			<Button size="sm" onclick={() => (open = true)}><Plus />Add new</Button>
 		</Card.Header>
 		<Card.Content>
-			<DataTable data={data.payments} {columns} />
+			<DataTable data={data.payments} {columns} onDelete={() => {}} filterKey="email" disabled />
 		</Card.Content>
 	</Card.Root>
 </div>
