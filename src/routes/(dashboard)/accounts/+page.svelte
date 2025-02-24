@@ -4,10 +4,11 @@
 	import * as Card from '$components/ui/card';
 	import { Button } from '$components/ui/button';
 	import { superForm } from 'sveltekit-superforms';
-	import { columns, DataTable, NewAccountSheet } from '$features/accounts';
+	import { DataTable, NewAccountSheet } from '$features/accounts';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
-	import { Plus } from '$components/icons';
+	import { columns } from '$features/accounts/columns';
+	import { Plus } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -19,9 +20,9 @@
 
 <div class="px-4 lg:px-14 pb-10 -mt-24">
 	<Card.Root class="border-none drop-shadow-sm max-w-screen-2xl w-full mx-auto">
-		<Card.Header class="gap-y-2 lg:flex-row lg:items-center lg:justify-between pb-6">
+		<Card.Header class="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
 			<Card.Title class="text-xl line-clamp-1">Accounts page</Card.Title>
-			<Button size="sm" onclick={() => (open = true)}><Plus class="!size-5"/>Add new</Button>
+			<Button size="sm" onclick={() => (open = true)}><Plus />Add new</Button>
 		</Card.Header>
 		<Card.Content>
 			<DataTable data={data.payments} {columns} />

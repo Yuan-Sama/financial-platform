@@ -1,15 +1,20 @@
 <script lang="ts" generics="TData, TValue">
 	import {
 		type ColumnDef,
+		type ColumnFiltersState,
 		getCoreRowModel,
+		getFilteredRowModel,
 		getPaginationRowModel,
 		getSortedRowModel,
 		type PaginationState,
+		type RowSelectionState,
 		type SortingState
 	} from '@tanstack/table-core';
 	import { createSvelteTable, FlexRender } from '$components/ui/data-table';
 	import * as Table from '$components/ui/table';
 	import { Button } from '$components/ui/button';
+	import { Input } from '$components/ui/input';
+	import { Trash2 } from 'lucide-svelte';
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
@@ -20,6 +25,8 @@
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 5 });
 	let sorting = $state<SortingState>([]);
+	let columnFilters = $state<ColumnFiltersState>([]);
+	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
@@ -32,6 +39,12 @@
 			},
 			get sorting() {
 				return sorting;
+			},
+			get columnFilters() {
+				return columnFilters;
+			},
+			get rowSelection() {
+				return rowSelection;
 			}
 		},
 		onPaginationChange: (updater) => {
@@ -48,13 +61,47 @@
 				sorting = updater;
 			}
 		},
+		onColumnFiltersChange: (updater) => {
+			if (typeof updater === 'function') {
+				columnFilters = updater(columnFilters);
+			} else {
+				columnFilters = updater;
+			}
+		},
+
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === 'function') {
+				rowSelection = updater(rowSelection);
+			} else {
+				rowSelection = updater;
+			}
+		},
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
-		getSortedRowModel: getSortedRowModel()
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel()
 	});
 </script>
 
 <div>
+	<div class="flex items-center py-4">
+		<Input
+			placeholder="Filter emails..."
+			value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+			onchange={(e) => {
+				table.getColumn('email')?.setFilterValue(e.currentTarget.value);
+			}}
+			oninput={(e) => {
+				table.getColumn('email')?.setFilterValue(e.currentTarget.value);
+			}}
+			class="max-w-sm"
+		/>
+		{#if table.getFilteredSelectedRowModel().rows.length > 0}
+			<Button size="sm" variant="outline" class="ml-auto font-normal text-xs"
+				><Trash2 /> Delete</Button
+			>
+		{/if}
+	</div>
 	<div class="rounded-md border">
 		<Table.Root>
 			<Table.Header>
@@ -91,6 +138,10 @@
 		</Table.Root>
 	</div>
 	<div class="flex items-center justify-end space-x-2 py-4">
+		<div class="text-muted-foreground flex-1 text-sm">
+			{table.getFilteredSelectedRowModel().rows.length} of{' '}
+			{table.getFilteredRowModel().rows.length} row(s) selected.
+		</div>
 		<Button
 			variant="outline"
 			size="sm"

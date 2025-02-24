@@ -3,8 +3,8 @@
 	import * as Avatar from './ui/avatar';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { createAvatar } from '@dicebear/core';
-	import { LogOut, User } from './icons';
 	import { goto } from '$app/navigation';
+	import { LogOut, User } from 'lucide-svelte';
 
 	let { displayName }: { displayName: string } = $props();
 

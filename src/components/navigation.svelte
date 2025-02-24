@@ -2,10 +2,10 @@
 	import Logo from '$assets/logo.svg';
 	import { page } from '$app/state';
 	import { APP_NAME } from '$lib';
-	import { Menu } from './icons';
 	import { Button, buttonVariants } from './ui/button';
 	import * as Sheet from './ui/sheet';
 	import { cn } from './utils';
+	import { Menu } from 'lucide-svelte';
 
 	const routes = [
 		{
