@@ -4,9 +4,9 @@
 
 	import '../app.css';
 	import Logo from '$assets/logo.svg';
-	import BackToTop from '$components/back-to-top.svelte';
 	import { APP_NAME } from '$lib';
 	import { Toaster } from '$components/ui/sonner';
+	import { BackToTop } from '$features/shared';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>

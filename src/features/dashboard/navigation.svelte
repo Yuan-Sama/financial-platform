@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Logo from '$assets/logo.svg';
+	import { cn } from '$components/utils';
+	import * as Sheet from '$components/ui/sheet';
 	import { page } from '$app/state';
 	import { APP_NAME } from '$lib';
-	import { Button, buttonVariants } from './ui/button';
-	import * as Sheet from './ui/sheet';
-	import { cn } from './utils';
+	import { Button, buttonVariants } from '$components/ui/button';
 	import { Menu } from 'lucide-svelte';
 
 	const routes = [

@@ -10,7 +10,7 @@
 	import * as Form from '$components/ui/form';
 	import { Input } from '$components/ui/input';
 	import { get } from 'svelte/store';
-	import Spinner from '$components/spinner.svelte';
+	import { Spinner } from '$features/shared';
 
 	let {
 		form,

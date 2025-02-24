@@ -12,7 +12,7 @@
 	import { APP_NAME } from '$lib';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import Spinner from '$components/spinner.svelte';
+	import { Spinner } from '$features/shared';
 
 	let { data }: { data: PageData } = $props();
 
