@@ -1,30 +1,83 @@
 <script lang="ts">
 	type Account = { id: number; name: string };
 
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import type { ColumnDef } from '@tanstack/table-core';
+	import type { getPageAccount } from '$lib/server/account/repo';
+
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	import { Plus } from 'lucide-svelte';
 
 	import * as Card from '$components/ui/card';
 	import { Button } from '$components/ui/button';
 	import { Checkbox } from '$components/ui/checkbox';
+	import { Skeleton } from '$components/ui/skeleton';
 	import { renderComponent } from '$components/ui/data-table';
 
-	import { superForm } from 'sveltekit-superforms';
+	import { superForm, type FormResult } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	import { DataTableSortColumn } from '$features/shared';
+	import { DataTableSortColumn, Spinner } from '$features/shared';
 	import { DataTable, NewAccountSheet } from '$features/accounts';
 	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
 
 	let { data }: { data: PageData } = $props();
 
-	let { data: accounts, page, pageSize, totalRecords } = data.pagination;
+	let accounts = $state(data.pagination.data);
 	let open = $state(false);
 
-	const createForm = superForm(data.createForm, { validators: zodClient(createAccountSchema) });
-	const updateForm = superForm(data.updateForm, { validators: zodClient(updateAccountSchema) });
+	const createForm = superForm(data.createForm, {
+		validators: zodClient(createAccountSchema),
+		async onUpdate({ form, result }) {
+			if (result.status === 401) {
+				await goto('/sign-in', { invalidateAll: true });
+				toast.error('Unauthorized');
+				return;
+			}
+
+			const data = result.data as FormResult<ActionData>;
+
+			if (form.valid && data.createSuccess) {
+				const { message, pagination } = data.createSuccess;
+
+				open = false;
+				toast.success(message);
+				accounts = pagination.data;
+			}
+		}
+	});
+
+	const updateForm = superForm(data.updateForm, {
+		validators: zodClient(updateAccountSchema),
+		async onUpdate({ form, result }) {
+			if (result.status === 401) {
+				await goto('/sign-in', { invalidateAll: true });
+				toast.error('Unauthorized');
+				return;
+			}
+
+			const data = result.data as FormResult<ActionData>;
+
+			if (form.valid && data.updateSuccess) {
+				const { message, pagination } = data.updateSuccess;
+
+				open = false;
+				toast.success(message);
+				accounts = pagination.data;
+			}
+		}
+	});
+
+	const { delayed: createState } = createForm;
+	const { delayed: updateState } = updateForm;
+	let deleteState = $state(false);
+	let disableDeleteButton = $state(false);
+
+	let isLoading = $derived.by(() => {
+		return $createState || $updateState || deleteState;
+	});
 
 	const columns: ColumnDef<Account>[] = [
 		{
@@ -57,16 +110,74 @@
 	];
 </script>
 
-<div class="px-4 lg:px-14 pb-10 -mt-24">
-	<Card.Root class="border-none drop-shadow-sm max-w-screen-2xl w-full mx-auto">
-		<Card.Header class="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-			<Card.Title class="text-xl line-clamp-1">Accounts page</Card.Title>
-			<Button size="sm" onclick={() => (open = true)}><Plus />Add new</Button>
-		</Card.Header>
-		<Card.Content>
-			<DataTable data={accounts} {columns} onDelete={() => {}} filterKey="name" disabled />
-		</Card.Content>
-	</Card.Root>
-</div>
+{#if isLoading}
+	<div class="px-4 lg:px-14 pb-10 -mt-24">
+		<Card.Root class="border-none drop-shadow-sm">
+			<Card.Header>
+				<Skeleton class="h-8 w-48" />
+			</Card.Header>
+			<Card.Content>
+				<div class="h-[500px] w-full flex items-center justify-center">
+					<Spinner />
+				</div>
+			</Card.Content>
+		</Card.Root>
+	</div>
+{:else}
+	<div class="px-4 lg:px-14 pb-10 -mt-24">
+		<Card.Root class="border-none drop-shadow-sm max-w-screen-2xl w-full mx-auto">
+			<Card.Header class="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+				<Card.Title class="text-xl line-clamp-1">Accounts page</Card.Title>
+				<Button size="sm" onclick={() => (open = true)}><Plus />Add new</Button>
+			</Card.Header>
+			<Card.Content>
+				<DataTable
+					data={accounts}
+					{columns}
+					onDelete={async (rows) => {
+						deleteState = true;
+						disableDeleteButton = true;
+
+						const ids = rows.map((row) => row.original.id);
+
+						const response = await fetch('/api/accounts/bulk-delete', {
+							method: 'POST',
+							body: JSON.stringify({ ids })
+						});
+
+						if (response.status === 401) {
+							await goto('/sign-in', { invalidateAll: true });
+
+							deleteState = false;
+							disableDeleteButton = false;
+
+							toast.error('Unauthorized');
+							return;
+						}
+
+						if (!response.ok) {
+							const data = (await response.json()) as { message: string };
+
+							deleteState = false;
+							disableDeleteButton = false;
+
+							toast.error(data.message);
+							return;
+						}
+
+						const pagination = await (response.json() as ReturnType<typeof getPageAccount>);
+						accounts = pagination.data;
+
+						disableDeleteButton = false;
+						deleteState = false;
+
+						toast.success('Accounts deleted');
+					}}
+					filterKey="name"
+				/>
+			</Card.Content>
+		</Card.Root>
+	</div>
+{/if}
 
 <NewAccountSheet bind:open form={createForm} action="?/create" />

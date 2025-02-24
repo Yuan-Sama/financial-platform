@@ -9,6 +9,7 @@ export async function createAccount(data: { userId: number; name: string }) {
 			user_id: data.userId,
 			name: data.name
 		})
+		.returning(['id'])
 		.executeTakeFirst();
 }
 
@@ -55,7 +56,7 @@ export async function getTotalRecords(
 	return countResult?.count ?? 0;
 }
 
-export async function getPageAccount(
+export async function getAccounts(
 	userId: number,
 	page: number,
 	pageSize: number,
@@ -80,4 +81,23 @@ export async function getPageAccount(
 		.limit(pageSize)
 		.select(['id', 'name'])
 		.execute();
+}
+
+export async function getPageAccount(
+	userId: number,
+	page: number,
+	pageSize: number,
+	search: string | null | undefined = undefined,
+	orders: string[] = []
+) {
+	return {
+		page,
+		pageSize,
+		totalRecords: await getTotalRecords(userId),
+		data: await getAccounts(userId, page, pageSize, search, orders)
+	};
+}
+
+export async function deleteAccounts(userId: number, ids: number[]) {
+	return db.deleteFrom('accounts').where('user_id', '==', userId).where('id', 'in', ids).execute();
 }

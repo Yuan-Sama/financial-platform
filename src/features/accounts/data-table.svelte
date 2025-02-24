@@ -103,8 +103,15 @@
 			class="max-w-sm"
 		/>
 		{#if table.getFilteredSelectedRowModel().rows.length > 0}
-			<Button size="sm" variant="outline-red" class="ml-auto font-normal text-xs" {disabled}
-				><Trash2 /> Delete ({table.getFilteredSelectedRowModel().rows.length})</Button
+			<Button
+				size="sm"
+				variant="outline-red"
+				class="ml-auto font-normal text-xs"
+				{disabled}
+				onclick={async () => {
+					await onDelete(table.getFilteredSelectedRowModel().rows);
+					table.reset();
+				}}><Trash2 /> Delete ({table.getFilteredSelectedRowModel().rows.length})</Button
 			>
 		{/if}
 	</div>

@@ -25,7 +25,7 @@
 {#if scrollY > showAtPx}
 	<div class="fixed bottom-4 right-4 z-996" transition:fade={{ duration: 700 }}>
 		<Button
-			class="leading-0 flex animate-bounce items-center justify-center rounded-[50%] hover:text-primary-foreground hover:bg-primary border-primary [&_svg]:size-5"
+			class="leading-0 flex animate-bounce items-center justify-center rounded-[50%] hover:text-primary-foreground hover:bg-primary border-primary [&_svg]:size-5 text-primary"
 			variant="outline"
 			size="icon"
 			onclick={() => scrollToTop()}

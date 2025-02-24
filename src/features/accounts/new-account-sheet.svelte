@@ -9,12 +9,7 @@
 	}: { form: CreateForm | UpdateForm; action: string; open?: boolean | undefined } = $props();
 </script>
 
-<Sheet.Root
-	{open}
-	onOpenChange={() => {
-		open = false;
-	}}
->
+<Sheet.Root {open}>
 	<Sheet.Content class="space-y-4">
 		<Sheet.Header>
 			<Sheet.Title>New Account</Sheet.Title>
