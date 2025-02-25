@@ -7,11 +7,11 @@
 	let {
 		form = undefined,
 		open = $bindable(undefined),
-		onUpdate = undefined
+		isLoading = false
 	}: {
 		form?: CreateForm | UpdateForm;
 		open?: boolean | undefined;
-		onUpdate?: () => void | undefined;
+		isLoading?: boolean;
 	} = $props();
 
 	function isUpdateForm(form: CreateForm | UpdateForm): form is UpdateForm {
@@ -20,17 +20,18 @@
 	}
 </script>
 
-<Sheet.Root
-	{open}
-	onOpenChange={(isOpen) => {
-		open = isOpen;
-		return onUpdate?.();
-	}}
->
-	<Sheet.Content class="space-y-4">
+<Sheet.Root {open} onOpenChange={() => (open = false)}>
+	<Sheet.Content class="space-y-4" interactOutsideBehavior={isLoading ? 'ignore' : 'close'}>
 		<Sheet.Header>
-			<Sheet.Title>New Account</Sheet.Title>
-			<Sheet.Description>Create a new account to track your transactions.</Sheet.Description>
+			{#if form}
+				{#if isUpdateForm(form)}
+					<Sheet.Title>Edit Account</Sheet.Title>
+					<Sheet.Description>Edit an existing account.</Sheet.Description>
+				{:else}
+					<Sheet.Title>New Account</Sheet.Title>
+					<Sheet.Description>Create a new account to track your transactions.</Sheet.Description>
+				{/if}
+			{/if}
 		</Sheet.Header>
 		{#if form}
 			{#if isUpdateForm(form)}

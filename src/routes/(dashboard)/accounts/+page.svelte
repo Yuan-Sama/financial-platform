@@ -20,7 +20,7 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import { DataTableSortColumn, Spinner } from '$features/shared';
-	import { DataTable, FormDialog, RowActions } from '$features/accounts';
+	import { DataTable, FormSheet, RowActions } from '$features/accounts';
 	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
 
 	let { data }: { data: PageData } = $props();
@@ -31,6 +31,7 @@
 	let openSheet = $state(false);
 
 	const createForm = superForm(data.createForm, {
+		delayMs: 100,
 		validators: zodClient(createAccountSchema),
 		async onUpdate({ form, result }) {
 			if (result.status === 401) {
@@ -48,10 +49,14 @@
 				toast.success(message);
 				accounts = pagination.data;
 			}
+		},
+		onUpdated(event) {
+			formMode = undefined;
 		}
 	});
 
 	const updateForm = superForm(data.updateForm, {
+		delayMs: 100,
 		validators: zodClient(updateAccountSchema),
 		async onUpdate({ form, result }) {
 			if (result.status === 401) {
@@ -69,6 +74,9 @@
 				toast.success(message);
 				accounts = pagination.data;
 			}
+		},
+		onUpdated(event) {
+			formMode = undefined;
 		}
 	});
 
@@ -123,8 +131,6 @@
 				})
 		}
 	];
-
-	$inspect(isLoading);
 </script>
 
 {#if isLoading}
@@ -201,14 +207,8 @@
 	</div>
 {/if}
 
-<FormDialog
+<FormSheet
 	bind:open={openSheet}
+	{isLoading}
 	form={formMode === 'update' ? updateForm : formMode === 'create' ? createForm : undefined}
-	onUpdate={() => {
-		if (formMode === 'update') {
-			updateForm.reset({ data: undefined });
-		} else if (formMode === 'create') createForm.reset({ data: undefined });
-
-		formMode = undefined;
-	}}
 />

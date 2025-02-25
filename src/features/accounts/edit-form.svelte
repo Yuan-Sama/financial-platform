@@ -9,13 +9,15 @@
 	import * as Form from '$components/ui/form';
 	import { Input } from '$components/ui/input';
 	import { Spinner } from '$features/shared';
+	import { Trash } from 'lucide-svelte';
 
 	let { form }: { form: UpdateForm } = $props();
 
 	const { enhance, form: formData, delayed } = form;
+	let action: '?/update' | '?/delete' = $state('?/update');
 </script>
 
-<form action="?/update" method="post" class="space-y-4 pt-4" use:enhance>
+<form {action} method="post" class="space-y-4 pt-4" use:enhance>
 	<Form.Field {form} name="id">
 		<Form.Control>
 			{#snippet children({ props })}
@@ -40,10 +42,21 @@
 		</Form.Control>
 	</Form.Field>
 
-	<Form.Button class="w-full " disabled={$delayed}>
+	<Form.Button class="w-full " disabled={$delayed} onclick={() => (action = '?/update')}>
 		Save Changes
-		{#if $delayed}
+		{#if $delayed && action === '?/update'}
 			<Spinner class="ml-1" />
+		{/if}
+	</Form.Button>
+	<Form.Button
+		class="w-full "
+		disabled={$delayed}
+		variant="outline-red"
+		onclick={() => (action = '?/delete')}
+	>
+		<Trash />Delete account
+		{#if $delayed && action === '?/delete'}
+			<Spinner class="ml-1" variant="red" />
 		{/if}
 	</Form.Button>
 </form>

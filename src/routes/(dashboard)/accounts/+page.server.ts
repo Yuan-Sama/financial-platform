@@ -5,7 +5,12 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { message, superValidate } from 'sveltekit-superforms';
 import { delay } from '$lib';
 import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
-import { createAccount, getPageAccount, updateAccount } from '$lib/server/account/repo';
+import {
+	createAccount,
+	deleteAccount,
+	getPageAccount,
+	updateAccount
+} from '$lib/server/account/repo';
 
 const { DEV } = import.meta.env;
 
@@ -57,5 +62,22 @@ export const actions = {
 		const pagination = await getPageAccount(user.id, 1, 10);
 
 		return { updateForm, updateSuccess: { message: 'Account updated', pagination } };
+	},
+	delete: async ({ locals, request }) => {
+		const { user } = locals;
+		const updateForm = await superValidate(request, zod(updateAccountSchema));
+
+		if (!user) return fail(401, { updateForm });
+
+		if (DEV) await delay(1, 5);
+
+		if (!updateForm.valid) return message(updateForm, 'Invalid form');
+
+		await deleteAccount({ userId: user.id, id: updateForm.data.id });
+
+		// TODO: update for search params
+		const pagination = await getPageAccount(user.id, 1, 10);
+
+		return { updateForm, updateSuccess: { message: 'Account deleted', pagination } };
 	}
 } satisfies Actions;
