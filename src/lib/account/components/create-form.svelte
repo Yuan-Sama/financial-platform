@@ -1,16 +1,16 @@
 <script lang="ts" module>
-	export type CreateForm = SuperForm<CreateAccountSchemaType, any>;
+	import type { SuperForm } from 'sveltekit-superforms';
+	import type { CreateAccountSchema } from '$lib/account/zod-schema';
+
+	export type CreateAccountForm = SuperForm<CreateAccountSchema, any>;
 </script>
 
 <script lang="ts">
-	import type { SuperForm } from 'sveltekit-superforms';
-	import type { CreateAccountSchemaType } from '$lib/account/zod-schema';
-
 	import * as Form from '$components/ui/form';
 	import { Input } from '$components/ui/input';
-	import { Spinner } from '$features/shared';
+	import Spinner from '$lib/components/spinner.svelte';
 
-	let { form }: { form: CreateForm } = $props();
+	let { form }: { form: CreateAccountForm } = $props();
 
 	const { enhance, form: formData, delayed } = form;
 </script>

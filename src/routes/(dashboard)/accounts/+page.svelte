@@ -19,9 +19,12 @@
 	import { superForm, type FormResult } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	import { DataTableSortColumn, Spinner } from '$features/shared';
-	import { DataTable, FormSheet, RowActions } from '$features/accounts';
-	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
+	import DataTableSortColumn from '$lib/components/data-table-sort-column.svelte';
+	import { createAccountSchema, editAccountSchema } from '$lib/account/zod-schema';
+	import DataTable from '$lib/components/data-table.svelte';
+	import Spinner from '$lib/components/spinner.svelte';
+	import RowActions from '$lib/components/row-actions.svelte';
+	import FormSheet from '$lib/account/components/form-sheet.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -57,7 +60,7 @@
 
 	const updateForm = superForm(data.updateForm, {
 		delayMs: 100,
-		validators: zodClient(updateAccountSchema),
+		validators: zodClient(editAccountSchema),
 		async onUpdate({ form, result }) {
 			if (result.status === 401) {
 				await goto('/sign-in', { invalidateAll: true });
@@ -88,7 +91,7 @@
 		return $createState || $updateState || deleteState;
 	});
 
-	let formMode: 'update' | 'create' | undefined = $state(undefined);
+	let formMode: 'edit' | 'create' | undefined = $state(undefined);
 
 	const columns: ColumnDef<Account>[] = [
 		{
@@ -125,7 +128,7 @@
 					onEdit() {
 						const account = row.original;
 						updateForm.form.set({ id: account.id, name: account.name });
-						formMode = 'update';
+						formMode = 'edit';
 						openSheet = true;
 					}
 				})
@@ -210,5 +213,5 @@
 <FormSheet
 	bind:open={openSheet}
 	{isLoading}
-	form={formMode === 'update' ? updateForm : formMode === 'create' ? createForm : undefined}
+	form={formMode === 'edit' ? updateForm : formMode === 'create' ? createForm : undefined}
 />

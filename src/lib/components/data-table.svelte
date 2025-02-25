@@ -11,10 +11,12 @@
 		type RowSelectionState,
 		type SortingState
 	} from '@tanstack/table-core';
+	
 	import { createSvelteTable, FlexRender } from '$components/ui/data-table';
 	import * as Table from '$components/ui/table';
 	import { Button } from '$components/ui/button';
 	import { Input } from '$components/ui/input';
+
 	import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-svelte';
 
 	type MaybePromise<T> = T | Promise<T> | PromiseLike<T>;

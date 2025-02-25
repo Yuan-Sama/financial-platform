@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 import { message, superValidate } from 'sveltekit-superforms';
 import { delay } from '$lib';
-import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
+import { createAccountSchema, editAccountSchema } from '$lib/account/zod-schema';
 import {
 	createAccount,
 	deleteAccount,
@@ -18,7 +18,7 @@ export const load = (async ({ parent }) => {
 	const { user } = await parent();
 
 	const createForm = await superValidate(zod(createAccountSchema));
-	const updateForm = await superValidate(zod(updateAccountSchema));
+	const updateForm = await superValidate(zod(editAccountSchema));
 
 	const pagination = await getPageAccount(user.id, 1, 10);
 
@@ -48,7 +48,7 @@ export const actions = {
 	},
 	update: async ({ locals, request }) => {
 		const { user } = locals;
-		const updateForm = await superValidate(request, zod(updateAccountSchema));
+		const updateForm = await superValidate(request, zod(editAccountSchema));
 
 		if (!user) return fail(401, { updateForm });
 
@@ -65,7 +65,7 @@ export const actions = {
 	},
 	delete: async ({ locals, request }) => {
 		const { user } = locals;
-		const updateForm = await superValidate(request, zod(updateAccountSchema));
+		const updateForm = await superValidate(request, zod(editAccountSchema));
 
 		if (!user) return fail(401, { updateForm });
 

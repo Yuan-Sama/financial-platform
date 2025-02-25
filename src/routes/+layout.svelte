@@ -6,7 +6,7 @@
 	import Logo from '$assets/logo.svg';
 	import { APP_NAME } from '$lib';
 	import { Toaster } from '$components/ui/sonner';
-	import { BackToTop } from '$features/shared';
+	import BackToTop from '$lib/components/back-to-top.svelte';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>

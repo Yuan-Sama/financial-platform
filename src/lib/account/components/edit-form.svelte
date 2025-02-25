@@ -1,17 +1,17 @@
 <script lang="ts" module>
-	export type UpdateForm = SuperForm<UpdateAccountSchemaType, any>;
+	import type { SuperForm } from 'sveltekit-superforms';
+	import type { EditAccountSchema } from '$lib/account/zod-schema';
+
+	export type EditAccountForm = SuperForm<EditAccountSchema, any>;
 </script>
 
 <script lang="ts">
-	import type { SuperForm } from 'sveltekit-superforms';
-	import type { UpdateAccountSchemaType } from '$lib/account/zod-schema';
-
 	import * as Form from '$components/ui/form';
 	import { Input } from '$components/ui/input';
-	import { Spinner } from '$features/shared';
 	import { Trash } from 'lucide-svelte';
+	import Spinner from '$lib/components/spinner.svelte';
 
-	let { form }: { form: UpdateForm } = $props();
+	let { form }: { form: EditAccountForm } = $props();
 
 	const { enhance, form: formData, delayed } = form;
 	let action: '?/update' | '?/delete' = $state('?/update');

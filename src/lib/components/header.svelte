@@ -1,7 +1,8 @@
 <script lang="ts">
-	import HeaderLogo from './header-logo.svelte';
+	import Logo from '$assets/logo.svg';
+	import { APP_NAME } from '$lib';
+	import UserButton from '$lib/user/components/user-button.svelte';
 	import Navigation from './navigation.svelte';
-	import UserButton from './user-button.svelte';
 
 	let { displayName }: { displayName: string } = $props();
 </script>
@@ -10,7 +11,13 @@
 	<div class="mx-auto max-w-(--breakpoint-2xl)">
 		<div class="mb-14 flex w-full items-center justify-between">
 			<div class="flex items-center lg:gap-x-16">
-				<HeaderLogo />
+				<!-- Header Logo -->
+				<a href="/" class="hidden items-center lg:flex">
+					<img class="h-7 w-7" src={Logo} alt="logo" />
+					<span class="ml-2.5 text-2xl font-semibold text-white">
+						{APP_NAME}
+					</span>
+				</a>
 
 				<Navigation />
 			</div>

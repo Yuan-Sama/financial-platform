@@ -1,21 +1,24 @@
 <script lang="ts">
+	import type { CreateAccountForm } from './create-form.svelte';
+	import type { EditAccountForm } from './edit-form.svelte';
+	
 	import { get } from 'svelte/store';
 	import * as Sheet from '$components/ui/sheet';
-	import UpdateAccountForm, { type UpdateForm } from './edit-form.svelte';
-	import CreateAccountForm, { type CreateForm } from './create-form.svelte';
+	import EditForm from './edit-form.svelte';
+	import CreateForm from './create-form.svelte';
 
 	let {
 		form = undefined,
 		open = $bindable(undefined),
 		isLoading = false
 	}: {
-		form?: CreateForm | UpdateForm;
+		form?: CreateAccountForm | EditAccountForm;
 		open?: boolean | undefined;
 		isLoading?: boolean;
 	} = $props();
 
-	function isUpdateForm(form: CreateForm | UpdateForm): form is UpdateForm {
-		const { form: formData } = form as UpdateForm;
+	function isEditForm(form: CreateAccountForm | EditAccountForm): form is EditAccountForm {
+		const { form: formData } = form as EditAccountForm;
 		return get(formData).id != undefined;
 	}
 </script>
@@ -24,7 +27,7 @@
 	<Sheet.Content class="space-y-4" interactOutsideBehavior={isLoading ? 'ignore' : 'close'}>
 		<Sheet.Header>
 			{#if form}
-				{#if isUpdateForm(form)}
+				{#if isEditForm(form)}
 					<Sheet.Title>Edit Account</Sheet.Title>
 					<Sheet.Description>Edit an existing account.</Sheet.Description>
 				{:else}
@@ -34,10 +37,10 @@
 			{/if}
 		</Sheet.Header>
 		{#if form}
-			{#if isUpdateForm(form)}
-				<UpdateAccountForm {form} />
+			{#if isEditForm(form)}
+				<EditForm {form} />
 			{:else}
-				<CreateAccountForm {form} />
+				<CreateForm {form} />
 			{/if}
 		{/if}
 	</Sheet.Content>

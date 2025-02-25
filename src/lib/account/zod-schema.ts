@@ -12,11 +12,11 @@ const insertSchema = z.object({
 
 export const createAccountSchema = insertSchema.pick({ name: true });
 
-export type CreateAccountSchemaType = z.infer<typeof createAccountSchema>;
+export type CreateAccountSchema = z.infer<typeof createAccountSchema>;
 
-export const updateAccountSchema = insertSchema.pick({ id: true, name: true });
+export const editAccountSchema = insertSchema.pick({ id: true, name: true });
 
-export type UpdateAccountSchemaType = z.infer<typeof updateAccountSchema>;
+export type EditAccountSchema = z.infer<typeof editAccountSchema>;
 
 export const deleteAccountSchema = z.object({
 	ids: z.array(z.number().min(1, { message: 'id must be greater than 0' }))

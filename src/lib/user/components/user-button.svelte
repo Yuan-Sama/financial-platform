@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { adventurer } from '@dicebear/collection';
+	import { goto } from '$app/navigation';
+
 	import * as Avatar from '$components/ui/avatar';
 	import * as DropdownMenu from '$components/ui/dropdown-menu';
+
 	import { createAvatar } from '@dicebear/core';
-	import { goto } from '$app/navigation';
+	import { adventurer } from '@dicebear/collection';
+	
 	import { LogOut, User } from 'lucide-svelte';
 
 	let { displayName }: { displayName: string } = $props();
