@@ -110,7 +110,7 @@
 				{disabled}
 				onclick={async () => {
 					await onDelete(table.getFilteredSelectedRowModel().rows);
-					table.reset();
+					table.resetRowSelection();
 				}}><Trash2 /> Delete ({table.getFilteredSelectedRowModel().rows.length})</Button
 			>
 		{/if}

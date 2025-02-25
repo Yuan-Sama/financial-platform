@@ -106,6 +106,10 @@
 					isSorted: column.getIsSorted(),
 					text: 'Name'
 				})
+		},
+		{
+			id: "actions",
+			cell: ({row}) => <RowActions />
 		}
 	];
 </script>
@@ -118,7 +122,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="h-[500px] w-full flex items-center justify-center">
-					<Spinner />
+					<Spinner class="size-10" />
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -174,6 +178,7 @@
 						toast.success('Accounts deleted');
 					}}
 					filterKey="name"
+					disabled={disableDeleteButton}
 				/>
 			</Card.Content>
 		</Card.Root>
