@@ -15,7 +15,7 @@
 	import * as Table from '$components/ui/table';
 	import { Button } from '$components/ui/button';
 	import { Input } from '$components/ui/input';
-	import { Trash2 } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-svelte';
 
 	type MaybePromise<T> = T | Promise<T> | PromiseLike<T>;
 
@@ -25,11 +25,19 @@
 		filterKey: string;
 		onDelete: (rows: Row<TData>[]) => MaybePromise<void>;
 		disabled?: boolean;
+		paginationState?: PaginationState;
 	};
 
-	let { data, columns, filterKey, onDelete, disabled }: DataTableProps<TData, TValue> = $props();
+	let {
+		data,
+		columns,
+		filterKey,
+		onDelete,
+		disabled,
+		paginationState = { pageIndex: 0, pageSize: 5 }
+	}: DataTableProps<TData, TValue> = $props();
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 5 });
+	let pagination = $state<PaginationState>(paginationState);
 	let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
@@ -155,21 +163,43 @@
 			{table.getFilteredSelectedRowModel().rows.length} of{' '}
 			{table.getFilteredRowModel().rows.length} row(s) selected.
 		</div>
-		<Button
-			variant="outline"
-			size="sm"
-			onclick={() => table.previousPage()}
-			disabled={!table.getCanPreviousPage()}
-		>
-			Previous
-		</Button>
-		<Button
-			variant="outline"
-			size="sm"
-			onclick={() => table.nextPage()}
-			disabled={!table.getCanNextPage()}
-		>
-			Next
-		</Button>
+		<div class="flex items-center space-x-2">
+			<Button
+				variant="outline"
+				class="hidden h-8 w-8 p-0 lg:flex"
+				onclick={() => table.firstPage()}
+				disabled={!table.getCanPreviousPage()}
+			>
+				<span class="sr-only">Go to first page</span>
+				<ChevronsLeft size={15} />
+			</Button>
+			<Button
+				variant="outline"
+				class="h-8 w-8 p-0"
+				onclick={() => table.previousPage()}
+				disabled={!table.getCanPreviousPage()}
+			>
+				<span class="sr-only">Go to previous page</span>
+				<ChevronLeft size={15} />
+			</Button>
+			<Button
+				variant="outline"
+				class="h-8 w-8 p-0"
+				onclick={() => table.nextPage()}
+				disabled={!table.getCanNextPage()}
+			>
+				<span class="sr-only">Go to next page</span>
+				<ChevronRight size={15} />
+			</Button>
+			<Button
+				variant="outline"
+				class="hidden h-8 w-8 p-0 lg:flex"
+				onclick={() => table.lastPage()}
+				disabled={!table.getCanNextPage()}
+			>
+				<span class="sr-only">Go to last page</span>
+				<ChevronsRight size={15} />
+			</Button>
+		</div>
 	</div>
 </div>

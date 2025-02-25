@@ -132,7 +132,7 @@
 			</div>
 
 			<div class="mt-8">
-				<Form.Button class="w-full rounded-lg"
+				<Form.Button class="w-full rounded-lg" disabled={$delayed}
 					>Create an account
 					{#if $delayed}
 						<Spinner class="ml-1" />

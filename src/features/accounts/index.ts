@@ -1,5 +1,4 @@
-export { default as NewAccountSheet } from './new-account-sheet.svelte';
-export { default as AccountForm } from './account-form.svelte';
+export { default as FormDialog } from './form-dialog.svelte';
 export { default as DataTable } from './data-table.svelte';
 export { default as RowActions } from './row-actions.svelte';
 

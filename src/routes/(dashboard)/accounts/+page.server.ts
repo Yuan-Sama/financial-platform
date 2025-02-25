@@ -15,7 +15,7 @@ export const load = (async ({ parent }) => {
 	const createForm = await superValidate(zod(createAccountSchema));
 	const updateForm = await superValidate(zod(updateAccountSchema));
 
-	const pagination = await getPageAccount(user.id, 1, 5);
+	const pagination = await getPageAccount(user.id, 1, 10);
 
 	return { createForm, updateForm, pagination };
 }) satisfies PageServerLoad;
@@ -37,7 +37,7 @@ export const actions = {
 		// 	return message(createForm, 'Failed to create account', { status: 400 });
 
 		// TODO: update for search params
-		const pagination = await getPageAccount(user.id, 1, 5);
+		const pagination = await getPageAccount(user.id, 1, 10);
 
 		return { createForm, createSuccess: { message: 'Account created', pagination } };
 	},
@@ -54,7 +54,7 @@ export const actions = {
 		await updateAccount({ userId: user.id, ...updateForm.data });
 
 		// TODO: update for search params
-		const pagination = await getPageAccount(user.id, 1, 5);
+		const pagination = await getPageAccount(user.id, 1, 10);
 
 		return { updateForm, updateSuccess: { message: 'Account updated', pagination } };
 	}

@@ -20,13 +20,15 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import { DataTableSortColumn, Spinner } from '$features/shared';
-	import { DataTable, NewAccountSheet, RowActions } from '$features/accounts';
+	import { DataTable, FormDialog, RowActions } from '$features/accounts';
 	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
 
 	let { data }: { data: PageData } = $props();
 
 	let accounts = $state(data.pagination.data);
-	let open = $state(false);
+	let page = $state(data.pagination.page);
+	let pageSize = $state(data.pagination.pageSize);
+	let openSheet = $state(false);
 
 	const createForm = superForm(data.createForm, {
 		validators: zodClient(createAccountSchema),
@@ -42,7 +44,7 @@
 			if (form.valid && data.createSuccess) {
 				const { message, pagination } = data.createSuccess;
 
-				open = false;
+				openSheet = false;
 				toast.success(message);
 				accounts = pagination.data;
 			}
@@ -63,7 +65,7 @@
 			if (form.valid && data.updateSuccess) {
 				const { message, pagination } = data.updateSuccess;
 
-				open = false;
+				openSheet = false;
 				toast.success(message);
 				accounts = pagination.data;
 			}
@@ -73,11 +75,12 @@
 	const { delayed: createState } = createForm;
 	const { delayed: updateState } = updateForm;
 	let deleteState = $state(false);
-	let disableDeleteButton = $state(false);
 
 	let isLoading = $derived.by(() => {
 		return $createState || $updateState || deleteState;
 	});
+
+	let formMode: 'update' | 'create' | undefined = $state(undefined);
 
 	const columns: ColumnDef<Account>[] = [
 		{
@@ -109,10 +112,19 @@
 		},
 		{
 			id: 'actions',
-			header: 'Actions',
-			cell: ({ row }) => renderComponent(RowActions, {})
+			cell: ({ row }) =>
+				renderComponent(RowActions, {
+					onEdit() {
+						const account = row.original;
+						updateForm.form.set({ id: account.id, name: account.name });
+						formMode = 'update';
+						openSheet = true;
+					}
+				})
 		}
 	];
+
+	$inspect(isLoading);
 </script>
 
 {#if isLoading}
@@ -133,15 +145,21 @@
 		<Card.Root class="border-none drop-shadow-sm max-w-screen-2xl w-full mx-auto">
 			<Card.Header class="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
 				<Card.Title class="text-xl line-clamp-1">Accounts page</Card.Title>
-				<Button size="sm" onclick={() => (open = true)}><Plus />Add new</Button>
+				<Button
+					size="sm"
+					onclick={() => {
+						openSheet = true;
+						formMode = 'create';
+					}}><Plus />Add new</Button
+				>
 			</Card.Header>
 			<Card.Content>
 				<DataTable
 					data={accounts}
+					paginationState={{ pageIndex: page - 1, pageSize }}
 					{columns}
 					onDelete={async (rows) => {
 						deleteState = true;
-						disableDeleteButton = true;
 
 						const ids = rows.map((row) => row.original.id);
 
@@ -154,7 +172,6 @@
 							await goto('/sign-in', { invalidateAll: true });
 
 							deleteState = false;
-							disableDeleteButton = false;
 
 							toast.error('Unauthorized');
 							return;
@@ -164,7 +181,6 @@
 							const data = (await response.json()) as { message: string };
 
 							deleteState = false;
-							disableDeleteButton = false;
 
 							toast.error(data.message);
 							return;
@@ -173,17 +189,26 @@
 						const pagination = await (response.json() as ReturnType<typeof getPageAccount>);
 						accounts = pagination.data;
 
-						disableDeleteButton = false;
 						deleteState = false;
 
 						toast.success('Accounts deleted');
 					}}
 					filterKey="name"
-					disabled={disableDeleteButton}
+					disabled={deleteState}
 				/>
 			</Card.Content>
 		</Card.Root>
 	</div>
 {/if}
 
-<NewAccountSheet bind:open form={createForm} action="?/create" />
+<FormDialog
+	bind:open={openSheet}
+	form={formMode === 'update' ? updateForm : formMode === 'create' ? createForm : undefined}
+	onUpdate={() => {
+		if (formMode === 'update') {
+			updateForm.reset({ data: undefined });
+		} else if (formMode === 'create') createForm.reset({ data: undefined });
+
+		formMode = undefined;
+	}}
+/>

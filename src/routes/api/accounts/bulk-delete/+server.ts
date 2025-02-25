@@ -27,5 +27,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { ids } = validatedResult.data;
 	await deleteAccounts(user.id, ids);
 
-	return Response.json(await getPageAccount(user.id, 1, 5));
+	return Response.json(await getPageAccount(user.id, 1, 10));
 };
