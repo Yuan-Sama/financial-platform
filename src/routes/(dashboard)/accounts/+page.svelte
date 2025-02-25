@@ -20,7 +20,7 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import { DataTableSortColumn, Spinner } from '$features/shared';
-	import { DataTable, NewAccountSheet } from '$features/accounts';
+	import { DataTable, NewAccountSheet, RowActions } from '$features/accounts';
 	import { createAccountSchema, updateAccountSchema } from '$lib/account/zod-schema';
 
 	let { data }: { data: PageData } = $props();
@@ -108,8 +108,9 @@
 				})
 		},
 		{
-			id: "actions",
-			cell: ({row}) => <RowActions />
+			id: 'actions',
+			header: 'Actions',
+			cell: ({ row }) => renderComponent(RowActions, {})
 		}
 	];
 </script>
