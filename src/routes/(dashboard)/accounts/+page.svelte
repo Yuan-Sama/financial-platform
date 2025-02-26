@@ -1,5 +1,16 @@
 <script lang="ts">
 	type Account = { id: number; name: string };
+	type ValidatedForm =
+		| SuperValidated<CreateAccountSchema, any, CreateAccountSchema>
+		| SuperValidated<EditAccountSchema, any, EditAccountSchema>;
+	type ResultTypeOnUpdate = Required<
+		Extract<
+			ActionResult,
+			{
+				type: 'success' | 'failure';
+			}
+		>
+	>;
 
 	import type { ActionData, PageData } from './$types';
 	import type { ColumnDef } from '@tanstack/table-core';
@@ -11,15 +22,21 @@
 	import { Checkbox } from '$lib/components/checkbox';
 	import { Skeleton } from '$lib/components/skeleton';
 	import { renderComponent } from '$lib/components/data-table';
-	import { superForm, type FormResult } from 'sveltekit-superforms';
+	import { superForm, type FormResult, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { createAccountSchema, editAccountSchema } from '$lib/modules/account/zod.validator';
+	import {
+		createAccountSchema,
+		editAccountSchema,
+		type CreateAccountSchema,
+		type EditAccountSchema
+	} from '$lib/modules/account/zod.validator';
 	import Spinner from '$features/common/spinner.svelte';
 	import DataTable from '$features/common/data-table.svelte';
 	import DataTableRowActions from '$features/common/data-table-row-actions.svelte';
 	import DataTableSortColumn from '$features/common/data-table-sort-column.svelte';
 	import FormSheet from '$features/accounts/form-sheet.svelte';
 	import { Plus } from 'lucide-svelte';
+	import type { ActionResult } from '@sveltejs/kit';
 
 	let { data }: { data: PageData } = $props();
 
@@ -28,58 +45,49 @@
 	let pageSize = $state(data.pagination.pageSize);
 	let openSheet = $state(false);
 
+	async function onUpdate({ form, result }: { form: ValidatedForm; result: ResultTypeOnUpdate }) {
+		if (result.status === 401) {
+			await goto('/sign-in', { invalidateAll: true });
+			toast.error('Unauthorized');
+			return;
+		}
+
+		if (!form.valid) return;
+
+		const data = result.data as FormResult<ActionData>;
+
+		const { message, newPagination } = data;
+		if (newPagination) {
+			// TODO: page and pageSize
+			accounts = newPagination.data;
+		}
+
+		openSheet = false;
+
+		if (message) toast.success(message);
+	}
+
+	function onUpdated({ form }: { form: Readonly<ValidatedForm> }) {
+		formMode = undefined;
+	}
+
 	const createForm = superForm(data.createForm, {
 		delayMs: 100,
 		validators: zodClient(createAccountSchema),
-		async onUpdate({ form, result }) {
-			if (result.status === 401) {
-				await goto('/sign-in', { invalidateAll: true });
-				toast.error('Unauthorized');
-				return;
-			}
-
-			const data = result.data as FormResult<ActionData>;
-
-			if (form.valid && data.createSuccess) {
-				const { message, pagination } = data.createSuccess;
-
-				openSheet = false;
-				toast.success(message);
-				accounts = pagination.data;
-			}
-		},
-		onUpdated(event) {
-			formMode = undefined;
-		}
+		onUpdate,
+		onUpdated
 	});
+
+	const { delayed: createState } = createForm;
 
 	const updateForm = superForm(data.updateForm, {
 		delayMs: 100,
 		validators: zodClient(editAccountSchema),
-		async onUpdate({ form, result }) {
-			if (result.status === 401) {
-				await goto('/sign-in', { invalidateAll: true });
-				toast.error('Unauthorized');
-				return;
-			}
-
-			const data = result.data as FormResult<ActionData>;
-
-			if (form.valid && data.updateSuccess) {
-				const { message, pagination } = data.updateSuccess;
-
-				openSheet = false;
-				toast.success(message);
-				accounts = pagination.data;
-			}
-		},
-		onUpdated(event) {
-			formMode = undefined;
-		}
+		onUpdate,
+		onUpdated
 	});
-
-	const { delayed: createState } = createForm;
 	const { delayed: updateState } = updateForm;
+
 	let deleteState = $state(false);
 
 	let isLoading = $derived.by(() => {

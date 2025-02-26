@@ -14,7 +14,7 @@
 	let { form }: { form: EditAccountForm } = $props();
 
 	const { enhance, form: formData, delayed } = form;
-	let action: '?/update' | '?/delete' = $state('?/update');
+	let action: '?/edit' | '?/delete' = $state('?/edit');
 </script>
 
 <form {action} method="post" class="space-y-4 pt-4" use:enhance>
@@ -42,9 +42,9 @@
 		</Form.Control>
 	</Form.Field>
 
-	<Form.Button class="w-full " disabled={$delayed} onclick={() => (action = '?/update')}>
+	<Form.Button class="w-full " disabled={$delayed} onclick={() => (action = '?/edit')}>
 		Save Changes
-		{#if $delayed && action === '?/update'}
+		{#if $delayed && action === '?/edit'}
 			<Spinner class="ml-1" />
 		{/if}
 	</Form.Button>

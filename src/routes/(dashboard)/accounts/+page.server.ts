@@ -42,26 +42,26 @@ export const actions = {
 		// 	return message(createForm, 'Failed to create account', { status: 400 });
 
 		// TODO: update for search params
-		const pagination = await getPageAccount(user.id, 1, 10);
+		const newPagination = await getPageAccount(user.id, 1, 10);
 
-		return { createForm, createSuccess: { message: 'Account created', pagination } };
+		return { createForm, message: 'Account created', newPagination };
 	},
-	update: async ({ locals, request }) => {
+	edit: async ({ locals, request }) => {
 		const { user } = locals;
-		const updateForm = await superValidate(request, zod(editAccountSchema));
+		const editForm = await superValidate(request, zod(editAccountSchema));
 
-		if (!user) return fail(401, { updateForm });
+		if (!user) return fail(401, { editForm });
 
 		if (DEV) await delay(1, 5);
 
-		if (!updateForm.valid) return message(updateForm, 'Invalid form');
+		if (!editForm.valid) return message(editForm, 'Invalid form');
 
-		await updateAccount({ userId: user.id, ...updateForm.data });
+		await updateAccount({ userId: user.id, ...editForm.data });
 
 		// TODO: update for search params
-		const pagination = await getPageAccount(user.id, 1, 10);
+		const newPagination = await getPageAccount(user.id, 1, 10);
 
-		return { updateForm, updateSuccess: { message: 'Account updated', pagination } };
+		return { editForm, message: 'Account updated', newPagination };
 	},
 	delete: async ({ locals, request }) => {
 		const { user } = locals;
@@ -76,8 +76,8 @@ export const actions = {
 		await deleteAccount({ userId: user.id, id: updateForm.data.id });
 
 		// TODO: update for search params
-		const pagination = await getPageAccount(user.id, 1, 10);
+		const newPagination = await getPageAccount(user.id, 1, 10);
 
-		return { updateForm, updateSuccess: { message: 'Account deleted', pagination } };
+		return { updateForm, message: 'Account deleted', newPagination };
 	}
 } satisfies Actions;
