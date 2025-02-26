@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 
-import { deleteAccountSchema } from '$lib/account/zod-schema';
+import { deleteAccountSchema } from '$lib/modules/account/zod.validator';
 import { deleteAccounts, getPageAccount } from '$lib/server/account/repo';
 import { delay } from '$lib';
 

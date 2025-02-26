@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { createUser, getUserByUsername } from '$lib/server/user/repo';
-import { signUpSchema } from '$lib/auth/zod-schema';
+import { signUpSchema } from '$lib/modules/user/zod.validator';
 import { createAndSetAuthTokenCookie } from '$lib/server/auth';
 
 export const load = (async () => {

@@ -1,6 +1,6 @@
 import type { ExpressionBuilder, ExpressionWrapper, SqlBool } from 'kysely';
-import type { Account } from '.';
 import { db, type Database } from '../database';
+import type { AccountEntity } from '$lib/modules/account';
 
 export async function createAccount(data: { userId: number; name: string }) {
 	return db
@@ -13,7 +13,7 @@ export async function createAccount(data: { userId: number; name: string }) {
 		.executeTakeFirst();
 }
 
-export async function updateAccount(data: Account) {
+export async function updateAccount(data: AccountEntity) {
 	return db
 		.updateTable('accounts')
 		.set({ name: data.name })

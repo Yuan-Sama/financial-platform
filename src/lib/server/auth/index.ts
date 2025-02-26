@@ -1,10 +1,10 @@
 import type { Cookies } from '@sveltejs/kit';
-import type { User } from '../user';
 
 import * as jose from 'jose';
 import bcrypt from 'bcrypt';
 import { APP_NAME } from '$lib';
 import { getUserById } from '../user/repo';
+import type { UserEntity } from '$lib/modules/user';
 
 /**
  * @see {@link https://github.com/panva/jose/issues/210#jws-alg Algorithm Key Requirements}
@@ -26,7 +26,7 @@ export async function rawAndHashedStringMatch(rawString: string | Buffer, hashed
 	return bcrypt.compare(rawString, hashedString);
 }
 
-export async function createAuthToken(user: User, expiresAt: Date) {
+export async function createAuthToken(user: UserEntity, expiresAt: Date) {
 	return new jose.SignJWT({ id: user.id })
 		.setProtectedHeader({ alg })
 		.setIssuedAt()
@@ -70,7 +70,7 @@ export function getExpiresAt(seconds: number = 3600 /** 1 hour */) {
 
 export async function createAndSetAuthTokenCookie(
 	cookies: Cookies,
-	user: User,
+	user: UserEntity,
 	expiresAtSeconds: number = 3600 /** 1 hour */
 ) {
 	const expiresAt = getExpiresAt(expiresAtSeconds);

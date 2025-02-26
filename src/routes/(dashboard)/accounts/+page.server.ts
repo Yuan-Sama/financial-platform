@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 import { message, superValidate } from 'sveltekit-superforms';
 import { delay } from '$lib';
-import { createAccountSchema, editAccountSchema } from '$lib/account/zod-schema';
+import { createAccountSchema, editAccountSchema } from '$lib/modules/account/zod.validator';
 import {
 	createAccount,
 	deleteAccount,

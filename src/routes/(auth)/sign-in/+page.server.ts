@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { signInSchema } from '$lib/auth/zod-schema';
+import { signInSchema } from '$lib/modules/user/zod.validator';
 import { getUserByUsername, comparePasswords } from '$lib/server/user/repo';
 import { createAndSetAuthTokenCookie } from '$lib/server/auth';
 

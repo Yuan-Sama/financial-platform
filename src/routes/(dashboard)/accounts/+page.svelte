@@ -4,27 +4,22 @@
 	import type { ActionData, PageData } from './$types';
 	import type { ColumnDef } from '@tanstack/table-core';
 	import type { getPageAccount } from '$lib/server/account/repo';
-
-	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-
-	import { Plus } from 'lucide-svelte';
-
-	import * as Card from '$components/ui/card';
-	import { Button } from '$components/ui/button';
-	import { Checkbox } from '$components/ui/checkbox';
-	import { Skeleton } from '$components/ui/skeleton';
-	import { renderComponent } from '$components/ui/data-table';
-
+	import { toast } from 'svelte-sonner';
+	import * as Card from '$lib/components/card';
+	import { Button } from '$lib/components/button';
+	import { Checkbox } from '$lib/components/checkbox';
+	import { Skeleton } from '$lib/components/skeleton';
+	import { renderComponent } from '$lib/components/data-table';
 	import { superForm, type FormResult } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-
-	import DataTableSortColumn from '$lib/components/data-table-sort-column.svelte';
-	import { createAccountSchema, editAccountSchema } from '$lib/account/zod-schema';
-	import DataTable from '$lib/components/data-table.svelte';
-	import Spinner from '$lib/components/spinner.svelte';
-	import RowActions from '$lib/components/row-actions.svelte';
-	import FormSheet from '$lib/account/components/form-sheet.svelte';
+	import { createAccountSchema, editAccountSchema } from '$lib/modules/account/zod.validator';
+	import Spinner from '$features/common/spinner.svelte';
+	import DataTable from '$features/common/data-table.svelte';
+	import DataTableRowActions from '$features/common/data-table-row-actions.svelte';
+	import DataTableSortColumn from '$features/common/data-table-sort-column.svelte';
+	import FormSheet from '$features/accounts/form-sheet.svelte';
+	import { Plus } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -124,7 +119,7 @@
 		{
 			id: 'actions',
 			cell: ({ row }) =>
-				renderComponent(RowActions, {
+				renderComponent(DataTableRowActions, {
 					onEdit() {
 						const account = row.original;
 						updateForm.form.set({ id: account.id, name: account.name });

@@ -1,18 +1,17 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-
-	import * as Form from '$components/ui/form';
-	import * as Card from '$components/ui/card';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { Input } from '$components/ui/input';
-	import { Label } from '$components/ui/label';
-	import { Checkbox } from '$components/ui/checkbox';
-	import { signInSchema } from '$lib/auth/zod-schema';
+	import * as Form from '$lib/components/form';
+	import * as Card from '$lib/components/card';
+	import { Input } from '$lib/components/input';
+	import { Label } from '$lib/components/label';
+	import { Checkbox } from '$lib/components/checkbox';
+	import { signInSchema } from '$lib/modules/user/zod.validator';
 	import { APP_NAME } from '$lib';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import Spinner from '$lib/components/spinner.svelte';
+	import Spinner from '$features/common/spinner.svelte';
 
 	let { data }: { data: PageData } = $props();
 

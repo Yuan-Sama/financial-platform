@@ -1,6 +1,6 @@
 import type { Kyselify } from 'drizzle-orm/kysely';
-import type { users } from './user/drizzle-schema';
-import type { accounts } from './account/drizzle-schema';
+import type { users } from '../modules/user/drizzle-schema.sqlite';
+import type { accounts } from '../modules/account/drizzle-schema.sqlite';
 
 import { env } from '$env/dynamic/private';
 import SQLite from 'better-sqlite3';
